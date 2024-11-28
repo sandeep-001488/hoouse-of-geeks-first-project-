@@ -444,3 +444,222 @@ int main() {
     return 0;
 }
 
+// without structre algorithsms
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+void generate_processes(int id[], int execution_time[], int priority[], int n) {
+    for (int i = 0; i < n; i++) {
+        id[i] = i + 1;
+        execution_time[i] = rand() % 20 + 1; // Random execution time between 1 and 20
+        priority[i] = rand() % 10 + 1;      // Random priority between 1 and 10
+    }
+}
+
+void fcfs_scheduling(int id[], int execution_time[], int n) {
+    int waiting_time = 0, turnaround_time = 0;
+    int total_wt = 0, total_tat = 0;
+    int completion_time = 0;
+
+    printf("\nFCFS Scheduling:\n");
+    printf("Process ID\tExecution Time\tWaiting Time\tTurnaround Time\n");
+
+    for (int i = 0; i < n; i++) {
+        waiting_time = completion_time;
+        turnaround_time = waiting_time + execution_time[i];
+
+        total_wt += waiting_time;
+        total_tat += turnaround_time;
+
+        printf("%d\t\t%d\t\t%d\t\t%d\n", id[i], execution_time[i], waiting_time, turnaround_time);
+
+        completion_time += execution_time[i];
+    }
+
+    printf("Average Waiting Time: %.2f\n", (float)total_wt / n);
+    printf("Average Turnaround Time: %.2f\n", (float)total_tat / n);
+}
+
+void sjf_scheduling(int id[], int execution_time[], int n) {
+    int waiting_time = 0, turnaround_time = 0;
+    int total_wt = 0, total_tat = 0;
+    int completion_time = 0;
+
+    printf("\nSJF Scheduling:\n");
+    printf("Process ID\tExecution Time\tWaiting Time\tTurnaround Time\n");
+
+    for (int i = 0; i < n; i++) {
+        waiting_time = completion_time;
+        turnaround_time = waiting_time + execution_time[i];
+
+        total_wt += waiting_time;
+        total_tat += turnaround_time;
+
+        printf("%d\t\t%d\t\t%d\t\t%d\n", id[i], execution_time[i], waiting_time, turnaround_time);
+
+        completion_time += execution_time[i];
+    }
+
+    printf("Average Waiting Time: %.2f\n", (float)total_wt / n);
+    printf("Average Turnaround Time: %.2f\n", (float)total_tat / n);
+}
+
+void priority_scheduling(int id[], int execution_time[], int priority[], int n) {
+    int waiting_time = 0, turnaround_time = 0;
+    int total_wt = 0, total_tat = 0;
+    int completion_time = 0;
+
+    printf("\nPriority Scheduling:\n");
+    printf("Process ID\tExecution Time\tPriority\tWaiting Time\tTurnaround Time\n");
+
+    for (int i = 0; i < n; i++) {
+        waiting_time = completion_time;
+        turnaround_time = waiting_time + execution_time[i];
+
+        total_wt += waiting_time;
+        total_tat += turnaround_time;
+
+        printf("%d\t\t%d\t\t%d\t\t%d\t\t%d\n", id[i], execution_time[i], priority[i], waiting_time, turnaround_time);
+
+        completion_time += execution_time[i];
+    }
+
+    printf("Average Waiting Time: %.2f\n", (float)total_wt / n);
+    printf("Average Turnaround Time: %.2f\n", (float)total_tat / n);
+}
+
+void sort_by_execution_time(int id[], int execution_time[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = i + 1; j < n; j++) {
+            if (execution_time[i] > execution_time[j]) {
+                int temp = execution_time[i];
+                execution_time[i] = execution_time[j];
+                execution_time[j] = temp;
+
+                temp = id[i];
+                id[i] = id[j];
+                id[j] = temp;
+            }
+        }
+    }
+}
+
+void sort_by_priority(int id[], int execution_time[], int priority[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = i + 1; j < n; j++) {
+            if (priority[i] > priority[j]) {
+                int temp = priority[i];
+                priority[i] = priority[j];
+                priority[j] = temp;
+
+                temp = execution_time[i];
+                execution_time[i] = execution_time[j];
+                execution_time[j] = temp;
+
+                temp = id[i];
+                id[i] = id[j];
+                id[j] = temp;
+            }
+        }
+    }
+}
+
+int main() {
+    srand(time(NULL)); // Seed for random number generation
+
+    int num_processes = 7;
+    int id[num_processes], execution_time[num_processes], priority[num_processes];
+
+    generate_processes(id, execution_time, priority, num_processes);
+
+    printf("Generated Processes (ID, Execution Time, Priority):\n");
+    for (int i = 0; i < num_processes; i++) {
+        printf("Process %d: Execution Time = %d, Priority = %d\n", id[i], execution_time[i], priority[i]);
+    }
+
+    fcfs_scheduling(id, execution_time, num_processes);
+
+    // SJF Scheduling
+    sort_by_execution_time(id, execution_time, num_processes);
+    sjf_scheduling(id, execution_time, num_processes);
+
+    // Priority Scheduling
+    sort_by_priority(id, execution_time, priority, num_processes);
+    priority_scheduling(id, execution_time, priority, num_processes);
+
+    return 0;
+}
+// rund robin
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+void generate_processes(int id[], int execution_time[], int n) {
+    for (int i = 0; i < n; i++) {
+        id[i] = i + 1;
+        execution_time[i] = rand() % 20 + 1; // Random execution time between 1 and 20
+    }
+}
+
+void round_robin_scheduling(int id[], int execution_time[], int n, int time_quantum) {
+    int waiting_time = 0, turnaround_time = 0;
+    int total_wt = 0, total_tat = 0;
+    int remaining_time[n];  // Remaining time of processes
+    int completion_time = 0;
+
+    // Copy execution times into remaining time
+    for (int i = 0; i < n; i++) {
+        remaining_time[i] = execution_time[i];
+    }
+
+    printf("\nRound Robin Scheduling (Time Quantum = %d):\n", time_quantum);
+    printf("Process ID\tExecution Time\tWaiting Time\tTurnaround Time\n");
+
+    // Keep executing processes until all processes are completed
+    while (1) {
+        int all_done = 1;
+        
+        for (int i = 0; i < n; i++) {
+            if (remaining_time[i] > 0) {
+                all_done = 0;
+                
+                // Process executes for time quantum or until completion
+                if (remaining_time[i] > time_quantum) {
+                    remaining_time[i] -= time_quantum;
+                    completion_time += time_quantum;
+                } else {
+                    completion_time += remaining_time[i];
+                    waiting_time = completion_time - execution_time[i];
+                    turnaround_time = waiting_time + execution_time[i];
+                    total_wt += waiting_time;
+                    total_tat += turnaround_time;
+                    printf("%d\t\t%d\t\t%d\t\t%d\n", id[i], execution_time[i], waiting_time, turnaround_time);
+                    remaining_time[i] = 0;  // Process finished
+                }
+            }
+        }
+        
+        if (all_done) {
+            break;
+        }
+    }
+
+    printf("Average Waiting Time: %.2f\n", (float)total_wt / n);
+    printf("Average Turnaround Time: %.2f\n", (float)total_tat / n);
+}
+
+int main() {
+    srand(time(NULL)); // Seed for random number generation
+
+    int num_processes = 7;
+    int id[num_processes], execution_time[num_processes];
+    int time_quantum = 4;  // Example time quantum
+
+    generate_processes(id, execution_time, num_processes);
+    round_robin_scheduling(id, execution_time, num_processes, time_quantum);
+
+    return 0;
+}
